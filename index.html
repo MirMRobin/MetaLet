@@ -1,0 +1,310 @@
+
+html_content = '''<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MetaLet - AI-Powered Layout-Preserved Translator</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Tesseract.js for OCR -->
+    <script src='https://unpkg.com/tesseract.js@5.0.4/dist/tesseract.min.js'></script>
+    <!-- PDF-lib for PDF processing -->
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <!-- PptxGenJS for PPTX processing -->
+    <script src="https://cdn.jsdelivr.net/npm/pptxgenjs@3.12.0/dist/pptxgen.min.js"></script>
+    <!-- PDF.js for PDF parsing -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <!-- JSZip for file handling -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <!-- FileSaver for downloads -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">
+                <svg class="logo-icon" viewBox="0 0 100 60">
+                    <defs>
+                        <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                            <stop offset="0%" style="stop-color:#666;stop-opacity:1" />
+                            <stop offset="50%" style="stop-color:#e63946;stop-opacity:1" />
+                            <stop offset="100%" style="stop-color:#333;stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <ellipse cx="30" cy="30" rx="25" ry="20" fill="none" stroke="url(#logoGrad)" stroke-width="8"/>
+                    <ellipse cx="50" cy="30" rx="25" ry="20" fill="none" stroke="#e63946" stroke-width="8"/>
+                    <ellipse cx="70" cy="30" rx="25" ry="20" fill="none" stroke="#333" stroke-width="8"/>
+                </svg>
+                <span class="logo-text">Meta<span class="logo-accent">Let</span></span>
+            </div>
+            <ul class="nav-links">
+                <li><a href="#translator" class="active">Translator</a></li>
+                <li><a href="#features">Features</a></li>
+                <li><a href="#languages">Languages</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>AI-Powered <span class="highlight">Layout-Preserved</span> Translation</h1>
+            <p class="hero-subtitle">Translate PPTX, PDF, Images & Text with perfect layout preservation. No limits on file size, pages, or resolution.</p>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number">23</span>
+                    <span class="stat-label">Languages</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">∞</span>
+                    <span class="stat-label">No Limits</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">100%</span>
+                    <span class="stat-label">Client-Side</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="floating-card card-1">
+                <span class="card-icon">📄</span>
+                <span>PPTX</span>
+            </div>
+            <div class="floating-card card-2">
+                <span class="card-icon">📑</span>
+                <span>PDF</span>
+            </div>
+            <div class="floating-card card-3">
+                <span class="card-icon">🖼️</span>
+                <span>Image</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Translator Section -->
+    <section id="translator" class="translator-section">
+        <div class="container">
+            <!-- Mode Tabs -->
+            <div class="mode-tabs">
+                <button class="mode-tab active" data-mode="file">
+                    <span class="tab-icon">📁</span>
+                    File & Image Translation
+                </button>
+                <button class="mode-tab" data-mode="text">
+                    <span class="tab-icon">📝</span>
+                    Text Translation
+                </button>
+            </div>
+
+            <!-- File Translation Panel -->
+            <div id="file-panel" class="panel active">
+                <div class="panel-header">
+                    <h2>Upload Files for Translation</h2>
+                    <p>Supports PPTX, PDF, PNG, JPG, JPEG — No size or page limits</p>
+                </div>
+
+                <div class="upload-area" id="upload-area">
+                    <div class="upload-content">
+                        <div class="upload-icon">☁️</div>
+                        <p class="upload-text">Drag & drop files here or click to browse</p>
+                        <p class="upload-formats">PPTX • PDF • PNG • JPG • JPEG</p>
+                        <input type="file" id="file-input" accept=".pptx,.pdf,.png,.jpg,.jpeg" multiple hidden>
+                        <button class="btn btn-outline" onclick="document.getElementById('file-input').click()">Select Files</button>
+                    </div>
+                </div>
+
+                <!-- File List -->
+                <div id="file-list" class="file-list"></div>
+
+                <!-- Translation Settings -->
+                <div class="settings-grid">
+                    <div class="setting-group">
+                        <label>Source Language</label>
+                        <select id="file-source-lang">
+                            <option value="auto">🔍 Auto-detect</option>
+                        </select>
+                    </div>
+                    <div class="setting-group">
+                        <label>Target Language</label>
+                        <select id="file-target-lang"></select>
+                    </div>
+                    <div class="setting-group">
+                        <label>Translation Mode</label>
+                        <div class="mode-toggle">
+                            <button class="mode-btn active" data-mode="ai">AI Contextual</button>
+                            <button class="mode-btn" data-mode="literal">Literal</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progress Section -->
+                <div id="progress-section" class="progress-section hidden">
+                    <div class="progress-header">
+                        <span id="progress-status">Initializing...</span>
+                        <span id="progress-percent">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div id="progress-fill" class="progress-fill"></div>
+                    </div>
+                    <div class="progress-steps">
+                        <div class="step" id="step-ocr">
+                            <span class="step-icon">🔍</span>
+                            <span>OCR</span>
+                        </div>
+                        <div class="step-arrow">→</div>
+                        <div class="step" id="step-translate">
+                            <span class="step-icon">🌐</span>
+                            <span>Translate</span>
+                        </div>
+                        <div class="step-arrow">→</div>
+                        <div class="step" id="step-generate">
+                            <span class="step-icon">⚙️</span>
+                            <span>Generate</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <button id="translate-file-btn" class="btn btn-primary btn-large" disabled>
+                        <span class="btn-icon">🚀</span>
+                        Start Translation
+                    </button>
+                    <button id="download-btn" class="btn btn-success btn-large hidden">
+                        <span class="btn-icon">⬇️</span>
+                        Download Result
+                    </button>
+                </div>
+
+                <!-- Preview Area -->
+                <div id="preview-area" class="preview-area hidden">
+                    <h3>Translation Preview</h3>
+                    <canvas id="preview-canvas"></canvas>
+                </div>
+            </div>
+
+            <!-- Text Translation Panel -->
+            <div id="text-panel" class="panel">
+                <div class="panel-header">
+                    <h2>Direct Text Translation</h2>
+                    <p>Instant translation with dual mode support</p>
+                </div>
+
+                <div class="text-layout">
+                    <div class="text-box">
+                        <div class="text-box-header">
+                            <label>Source Text</label>
+                            <select id="text-source-lang" class="lang-select-small">
+                                <option value="auto">Auto-detect</option>
+                            </select>
+                        </div>
+                        <textarea id="source-text" placeholder="Enter text to translate..."></textarea>
+                        <div class="text-box-footer">
+                            <span id="char-count">0 characters</span>
+                            <button id="clear-text" class="btn-text">Clear</button>
+                        </div>
+                    </div>
+
+                    <div class="text-controls">
+                        <button id="swap-langs" class="btn-icon-only">⇄</button>
+                        <button id="translate-text-btn" class="btn btn-primary">
+                            <span>Translate</span>
+                        </button>
+                    </div>
+
+                    <div class="text-box">
+                        <div class="text-box-header">
+                            <label>Translation</label>
+                            <div class="header-actions">
+                                <select id="text-target-lang" class="lang-select-small"></select>
+                                <div class="mode-toggle-small">
+                                    <button class="mode-btn-small active" data-mode="ai">AI</button>
+                                    <button class="mode-btn-small" data-mode="literal">Literal</button>
+                                </div>
+                            </div>
+                        </div>
+                        <textarea id="target-text" placeholder="Translation will appear here..." readonly></textarea>
+                        <div class="text-box-footer">
+                            <span id="translated-char-count">0 characters</span>
+                            <button id="copy-text" class="btn btn-small">📋 Copy</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features-section">
+        <div class="container">
+            <h2 class="section-title">Why <span class="highlight">MetaLet</span></h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h3>Layout Preservation</h3>
+                    <p>Maintains original formatting, fonts, and positioning. Smart auto-fit ensures translated text fits perfectly.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🤖</div>
+                    <h3>Dual AI Modes</h3>
+                    <p>Choose between contextual AI translation for natural results or literal translation for learning.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">∞</div>
+                    <h3>No Limits</h3>
+                    <p>No restrictions on file size, page count, or image resolution. Process 500+ page documents seamlessly.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>100% Private</h3>
+                    <p>All processing happens in your browser. Files never leave your device. No server, no data collection.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">🌍</div>
+                    <h3>23 Languages</h3>
+                    <p>Full support for all major global languages with auto-detection capabilities.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Fast Processing</h3>
+                    <p>Optimized algorithms process documents page-by-page with real-time progress tracking.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Languages Section -->
+    <section id="languages" class="languages-section">
+        <div class="container">
+            <h2 class="section-title">Supported <span class="highlight">Languages</span></h2>
+            <p class="section-subtitle">All 23 languages supported in both translation modes with full cross-language compatibility</p>
+            <div class="languages-grid" id="languages-grid"></div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <span class="logo-text">Meta<span class="logo-accent">Let</span></span>
+                    <p>AI-Powered Layout-Preserved Translation</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#translator">Translator</a>
+                    <a href="#features">Features</a>
+                    <a href="#languages">Languages</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 MetaLet. All processing happens client-side. No data leaves your device.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>'''
+
+
